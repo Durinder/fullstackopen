@@ -2,6 +2,20 @@ import React, { useState } from 'react'
 
 const Display = props => <div>{props.text} {props.value}</div>
 
+const Statistics = props => {
+	return (
+		<div>
+			<h2>statistics</h2>
+			<Display text="good" value={props.good} />
+			<Display text="neutral" value={props.neutral} />
+			<Display text="bad" value={props.bad} />
+			<Display text="all" value={props.good + props.neutral + props.bad} />
+			<Display text="average" value={(props.good - props.bad) / (props.good + props.neutral + props.bad)} />
+			<Display text="positive" value ={props.good / (props.good + props.neutral + props.bad) * 100 + ' %'} />
+		</div>
+	)
+}
+
 const Button = ({ handleClick, text }) => (
 	<button onClick={handleClick}>
 		{text}
@@ -31,13 +45,7 @@ const App = () => {
 		<Button handleClick={() => setToGood(good + 1)} text="good" />
 		<Button handleClick={() => setToNeutral(neutral + 1)} text="neutral" />
 		<Button handleClick={() => setToBad(bad + 1)} text="bad" />
-		<h2>statistics</h2>
-		<Display text="good" value={good} />
-		<Display text="neutral" value={neutral} />
-		<Display text="bad" value={bad} />
-		<Display text="all" value={good + neutral + bad} />
-		<Display text="average" value={(good - bad) / (good + neutral + bad)} />
-		<Display text="positive" value ={good / (good + neutral + bad) * 100 + ' %'} />
+		<Statistics good={good} neutral={neutral} bad={bad} />
     </div>
   )
 }
