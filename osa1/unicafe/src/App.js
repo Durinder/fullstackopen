@@ -1,18 +1,18 @@
 import React, { useState } from 'react'
 
-const Display = props => <div>{props.text} {props.value}</div>
+const StatisticLine = props => <div>{props.text} {props.value}</div>
 
-const Statistics = props => {
+const Statistics = (props) => {
 	if (props.good !== 0 || props.neutral !== 0 || props.bad !== 0)
 		return (
 			<div>
 				<h2>statistics</h2>
-				<Display text="good" value={props.good} />
-				<Display text="neutral" value={props.neutral} />
-				<Display text="bad" value={props.bad} />
-				<Display text="all" value={props.good + props.neutral + props.bad} />
-				<Display text="average" value={(props.good - props.bad) / (props.good + props.neutral + props.bad)} />
-				<Display text="positive" value ={props.good / (props.good + props.neutral + props.bad) * 100 + ' %'} />
+				<StatisticLine text="good" value={props.good} />
+				<StatisticLine text="neutral" value={props.neutral} />
+				<StatisticLine text="bad" value={props.bad} />
+				<StatisticLine text="all" value={props.good + props.neutral + props.bad} />
+				<StatisticLine text="average" value={(props.good - props.bad) / (props.good + props.neutral + props.bad)} />
+				<StatisticLine text="positive" value ={props.good / (props.good + props.neutral + props.bad) * 100 + ' %'} />
 			</div>
 		)
 	else
