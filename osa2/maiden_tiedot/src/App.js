@@ -1,7 +1,13 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 
-const Search = ({ countries, filter }) => {
+/* const Button = ({ handleClick }) => (
+	<button onClick={handleClick}>
+		show
+	</button>
+) */
+
+const Search = ({ countries, filter, setFilter }) => {
 	const ret = countries.filter(country =>
 		country.name.common.toLowerCase().search(filter.toLowerCase()) !== -1)
 	console.log(ret)
@@ -13,9 +19,10 @@ const Search = ({ countries, filter }) => {
 	if (ret.length > 1) {
 		return (
 			ret.map(element =>
-				<p key={element.name.common}>
-					{element.name.common}
-				</p>
+					<div key={element.name.common}>
+						{element.name.common}
+						<button onClick={() => setFilter(element.name.common)}>show</button>
+					</div>
 			)
 		)}
 	if (ret.length === 1) {
@@ -67,7 +74,7 @@ const App = () => {
   return (
     <div>
 		<Filter filter={filter} handleFilterChange={handleFilterChange} />
-		<Search countries={countries} filter={filter} />
+		<Search countries={countries} filter={filter} setFilter={setFilter}/>
     </div>
   )
 }
