@@ -1,11 +1,6 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-
-/* const Button = ({ handleClick }) => (
-	<button onClick={handleClick}>
-		show
-	</button>
-) */
+import Country from './components/Country'
 
 const Search = ({ countries, filter, setFilter }) => {
 	const ret = countries.filter(country =>
@@ -27,18 +22,7 @@ const Search = ({ countries, filter, setFilter }) => {
 		)}
 	if (ret.length === 1) {
 		return (
-			<div>
-			<h2>{ret[0].name.common}</h2>
-				capital {ret[0].capital} <br />
-				population {ret[0].population}
-			<h3>languages</h3>
-			<ul>{Object.values(ret[0].languages).map(language =>
-				<li key={language}>
-					{language}
-				</li>)}
-			</ul>
-			<img src={ret[0].flags.png} alt="flag"></img>
-			</div>
+			<Country country={ret[0]} />
 		)}
 	else {
 		return (
