@@ -1,25 +1,8 @@
+import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
+import Persons from './components/Persons'
 import personDB from './services/personDB'
 import React, { useEffect, useState } from 'react'
-
-const Persons = ({ persons, newFilter }) => {
-	const ret = persons.filter(obj => obj.name.toLowerCase().search(newFilter.toLowerCase()) !== -1)
-	return (ret.map(person =>
-			<p key={person.name}>
-				{person.name} {person.number}
-			</p>
-		)
-	)
-}
-
-const Filter = ({ newFilter, handleFilterChange }) => {
-	return (
-		<div>
-			filter shown with <input value={newFilter}
-			onChange={handleFilterChange} />
-		</div>
-	)
-}
 
 const App = () => {
 	const [persons, setPersons] = useState([])
@@ -69,6 +52,19 @@ const App = () => {
 		setNewFilter(event.target.value)
 	}
 
+	const handleDelete = person => {
+		if (window.confirm(`Delete ${person.name} ?`)) {
+			personDB
+				.deleteContact(person.id)
+					.then(() => {
+						setPersons(persons.filter(n => n.id !== persons.id))
+					})
+					.catch(error => {
+						alert(`the person '${person.name}' was already deleted from server`)
+					})
+		}
+	}
+
     return (
         <div>
             <h2>Phonebook</h2>
@@ -77,7 +73,7 @@ const App = () => {
 			<PersonForm addContact={addContact} name={newName} number={newNumber}
 				handleNameChange={handleNameChange} handleNumberChange={handleNumberChange} />
         	<h3>Numbers</h3>
-			<Persons persons={persons} newFilter={newFilter} />
+			<Persons persons={persons} newFilter={newFilter} handleDelete={handleDelete} />
         </div>
     )
 
