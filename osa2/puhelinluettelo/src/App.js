@@ -57,7 +57,8 @@ const App = () => {
 			personDB
 				.deleteContact(person.id)
 				.then(() => {
-					setPersons(persons.filter(n => n.id !== persons.id))
+					setPersons(persons.filter(n => n.id !== person.id))
+					alert(`the person '${person.name}' was deleted.`)
 				})
 				.catch(error => {
 					alert(`the person '${person.name}' was already deleted from server`)
