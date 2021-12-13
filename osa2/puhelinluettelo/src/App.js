@@ -56,12 +56,12 @@ const App = () => {
 		if (window.confirm(`Delete ${person.name} ?`)) {
 			personDB
 				.deleteContact(person.id)
-					.then(() => {
-						setPersons(persons.filter(n => n.id !== persons.id))
-					})
-					.catch(error => {
-						alert(`the person '${person.name}' was already deleted from server`)
-					})
+				.then(() => {
+					setPersons(persons.filter(n => n.id !== persons.id))
+				})
+				.catch(error => {
+					alert(`the person '${person.name}' was already deleted from server`)
+				})
 		}
 	}
 
