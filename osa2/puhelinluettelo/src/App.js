@@ -1,4 +1,5 @@
-import axios from 'axios'
+import PersonForm from './components/PersonForm'
+import personDB from './services/personDB'
 import React, { useEffect, useState } from 'react'
 
 const Persons = ({ persons, newFilter }) => {
@@ -11,21 +12,6 @@ const Persons = ({ persons, newFilter }) => {
 	)
 }
 
-const PersonForm = ({ addContact, name, number, handleNameChange, handleNumberChange }) => {
-	return (
-	<form onSubmit={addContact}>
-		<div>
-			name: <input value={name}
-			onChange={handleNameChange} />
-		</div>
-		<div>
-			number: <input value={number}
-			onChange={handleNumberChange} />
-		</div>
-		<button type="submit">add</button>
-		</form>
-	)
-}
 const Filter = ({ newFilter, handleFilterChange }) => {
 	return (
 		<div>
@@ -42,15 +28,13 @@ const App = () => {
 	const [newFilter, setNewFilter] = useState('')
 
 	useEffect(() => {
-		console.log('effect')
-		axios
-			.get('http://localhost:3001/persons')
-			.then(response => {
-				console.log('promise fulfilled')
-				setPersons(response.data)
-			})
+		personDB
+			.getAll()
+				.then(initialPersons => {
+					console.log('promise fulfilled')
+					setPersons(initialPersons)
+				})
 	}, [])
-	console.log('render', persons.length, 'persons')
 
 	const addContact = (event) => {
 		event.preventDefault()
@@ -62,9 +46,14 @@ const App = () => {
 			window.alert(`${newName} is already added to phonebook`)
 		}
 		else {
-			setPersons(persons.concat(contactObject))
-			setNewName('')
-			setNewNumber('')
+			personDB
+				.create(contactObject)
+				.then(returnedObject => {
+					setPersons(persons.concat(returnedObject))
+					setNewName('')
+					setNewNumber('')
+					console.log(returnedObject)
+				})
 		}
 	}
 
