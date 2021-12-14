@@ -3,12 +3,14 @@ import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import personDB from './services/personDB'
 import React, { useEffect, useState } from 'react'
+import Notification from './components/Notification'
 
 const App = () => {
 	const [persons, setPersons] = useState([])
     const [newName, setNewName] = useState('')
 	const [newNumber, setNewNumber] = useState('')
 	const [newFilter, setNewFilter] = useState('')
+	const [notification, setNotification] = useState(null)
 
 	useEffect(() => {
 		personDB
@@ -37,6 +39,8 @@ const App = () => {
 							})
 						setNewName('')
 						setNewNumber('')
+						setNotification(`Updated ${person.name}`)
+						setTimeout(() => setNotification(null), 5000)
 					})
 			}
 		}
@@ -47,7 +51,8 @@ const App = () => {
 					setPersons(persons.concat(returnedObject))
 					setNewName('')
 					setNewNumber('')
-					console.log(returnedObject)
+					setNotification(`Added ${returnedObject.name}`)
+					setTimeout(() => setNotification(null), 5000)
 				})
 		}
 	}
@@ -70,7 +75,8 @@ const App = () => {
 				.deleteContact(person.id)
 				.then(() => {
 					setPersons(persons.filter(n => n.id !== person.id))
-					alert(`the person '${person.name}' was deleted.`)
+					setNotification(`Deleted ${person.name}`)
+					setTimeout(() => setNotification(null), 5000)
 				})
 				.catch(error => {
 					alert(`the person '${person.name}' was already deleted from server`)
@@ -81,6 +87,7 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
+			<Notification message={notification} />
 			<Filter newFilter={newFilter} handleFilterChange={handleFilterChange}/>
 			<h3>add a new</h3>
 			<PersonForm addContact={addContact} name={newName} number={newNumber}
