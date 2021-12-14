@@ -3,7 +3,7 @@ import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import personDB from './services/personDB'
 import React, { useEffect, useState } from 'react'
-import Notification from './components/Notification'
+import { Notification, Error } from './components/Notification'
 
 const App = () => {
 	const [persons, setPersons] = useState([])
@@ -11,6 +11,7 @@ const App = () => {
 	const [newNumber, setNewNumber] = useState('')
 	const [newFilter, setNewFilter] = useState('')
 	const [notification, setNotification] = useState(null)
+	const [errorMessage, setErrorMessage] = useState(null)
 
 	useEffect(() => {
 		personDB
@@ -42,8 +43,15 @@ const App = () => {
 						setNotification(`Updated ${person.name}`)
 						setTimeout(() => setNotification(null), 5000)
 					})
+					.catch(error => {
+						setErrorMessage(`Information of ${person.name} has already been removed from server`)
+						setTimeout(() => setErrorMessage(null), 5000)
+						personDB
+							.getAll()
+							.then(updatedPersons => (setPersons(updatedPersons)))
+						})
+				}
 			}
-		}
 		else {
 			personDB
 				.create(contactObject)
@@ -79,7 +87,11 @@ const App = () => {
 					setTimeout(() => setNotification(null), 5000)
 				})
 				.catch(error => {
-					alert(`the person '${person.name}' was already deleted from server`)
+					setErrorMessage(`the person '${person.name}' was already deleted from server`)
+					setTimeout(() => setErrorMessage(null), 5000)
+					personDB
+					.getAll()
+					.then(updatedPersons => (setPersons(updatedPersons)))
 				})
 		}
 	}
@@ -87,6 +99,7 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
+			<Error message={errorMessage} />
 			<Notification message={notification} />
 			<Filter newFilter={newFilter} handleFilterChange={handleFilterChange}/>
 			<h3>add a new</h3>
