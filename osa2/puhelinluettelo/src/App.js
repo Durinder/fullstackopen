@@ -13,10 +13,9 @@ const App = () => {
 	useEffect(() => {
 		personDB
 			.getAll()
-				.then(initialPersons => {
-					console.log('promise fulfilled')
-					setPersons(initialPersons)
-				})
+			.then(initialPersons => {
+				setPersons(initialPersons)
+			})
 	}, [])
 
 	const addContact = (event) => {
@@ -26,7 +25,20 @@ const App = () => {
 			number: newNumber
 		}
 		if (persons.find(obj => obj.name === contactObject.name)) {
-			window.alert(`${newName} is already added to phonebook`)
+			if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+				const person = persons.find(obj => obj.name === contactObject.name)
+				personDB
+					.update(person.id, contactObject)
+					.then(() => {
+						personDB
+							.getAll()
+							.then(updatedPersons => {
+								setPersons(updatedPersons)
+							})
+						setNewName('')
+						setNewNumber('')
+					})
+			}
 		}
 		else {
 			personDB
