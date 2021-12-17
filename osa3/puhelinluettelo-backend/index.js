@@ -1,4 +1,5 @@
 const { response } = require('express')
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
@@ -47,19 +48,20 @@ app.get('/info', (req, res) => {
 })
   
 app.get('/api/persons', (req, res) => {
-	res.json(persons)
+	Person.find({}).then(people => {
+		res.json(people)
+	})
 })
 
 app.get('/api/persons/:id', (req, res) => {
-	const id = Number(req.params.id)
-	const person = persons.find(person => person.id === id)
-
-	if (person) {
-		res.json(person)
-	}
-	else {
-		res.status(404).end()
-	}
+	Person
+		.find({ _id: req.params.id })
+		.then(person => {
+			res.json(person)
+		})
+		.catch(error => {
+			res.status(404).end()
+		})
 })
 
 app.delete('/api/persons/:id', (req, res) => {
@@ -84,14 +86,15 @@ app.post('/api/persons', (req, res) => {
 		})
 	}
 
-	const person = {
+	const person = new Person ({
 		name: body.name,
-		number: body.number,
-		id: Math.floor(Math.random() * 65536)
-	}
+		number: body.number
+	})
+//		id: Math.floor(Math.random() * 65536)
 
-	persons = persons.concat(person)
-	res.json(person)
+	person.save().then(savedPerson => {
+		res.json(savedPerson)
+	})
 })
 
 const PORT = process.env.PORT || 3001
