@@ -1,8 +1,0 @@
-POST https://fathomless-beyond-79610.herokuapp.com/api/persons
-Content-Type: application/json
-
-{
-	"name": "Erkki Esimerkki",
-	"number": "112",
-	"id": 5
-}
