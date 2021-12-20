@@ -1,7 +1,7 @@
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
-import personDB from './services/personDB'
+import personService from './services/personService'
 import React, { useEffect, useState } from 'react'
 import { Notification, Error } from './components/Notification'
 
@@ -14,7 +14,7 @@ const App = () => {
 	const [errorMessage, setErrorMessage] = useState(null)
 
 	useEffect(() => {
-		personDB
+		personService
 			.getAll()
 			.then(initialPersons => {
 				setPersons(initialPersons)
@@ -30,30 +30,26 @@ const App = () => {
 		if (persons.find(obj => obj.name === contactObject.name)) {
 			if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
 				const person = persons.find(obj => obj.name === contactObject.name)
-				personDB
+				personService
 					.update(person.id, contactObject)
 					.then(() => {
-						personDB
+						personService
 							.getAll()
 							.then(updatedPersons => {
 								setPersons(updatedPersons)
 							})
 						setNewName('')
 						setNewNumber('')
-						setNotification(`Updated ${person.name}`)
-						setTimeout(() => setNotification(null), 5000)
 					})
 					.catch(error => {
-						setErrorMessage(`Information of ${person.name} has already been removed from server`)
+						console.log(error.response.data)
+						setErrorMessage(`${error.response.data.error}`)
 						setTimeout(() => setErrorMessage(null), 5000)
-						personDB
-							.getAll()
-							.then(updatedPersons => (setPersons(updatedPersons)))
-						})
-				}
+					})
 			}
+		}
 		else {
-			personDB
+			personService
 				.create(contactObject)
 				.then(returnedObject => {
 					setPersons(persons.concat(returnedObject))
@@ -61,6 +57,11 @@ const App = () => {
 					setNewNumber('')
 					setNotification(`Added ${returnedObject.name}`)
 					setTimeout(() => setNotification(null), 5000)
+				})
+				.catch(error => {
+					console.log(error.response.data)
+					setErrorMessage(`${error.response.data.error}`)
+					setTimeout(() => setErrorMessage(null), 5000)
 				})
 		}
 	}
@@ -79,7 +80,7 @@ const App = () => {
 
 	const handleDelete = person => {
 		if (window.confirm(`Delete ${person.name} ?`)) {
-			personDB
+			personService
 				.deleteContact(person.id)
 				.then(() => {
 					setPersons(persons.filter(n => n.id !== person.id))
@@ -89,7 +90,7 @@ const App = () => {
 				.catch(error => {
 					setErrorMessage(`the person '${person.name}' was already deleted from server`)
 					setTimeout(() => setErrorMessage(null), 5000)
-					personDB
+					personService
 					.getAll()
 					.then(updatedPersons => (setPersons(updatedPersons)))
 				})
