@@ -87,12 +87,12 @@ describe("total likes", () => {
 })
 
 describe("favorite blog", () => {
-	test("with empty list", () => {
+	test("of empty list returns error", () => {
 		const result = listHelper.favoriteBlog([])
 		expect(result.error).toEqual("no blogs")
 	})
 	
-	test("with most likes", () => {
+	test("of list of blogs returns correctly object with author and blog title and amount of likes", () => {
 		const result = listHelper.favoriteBlog(blogs)
 		expect(result.author).toEqual(blogs[2].author)
 		expect(result.likes).toEqual(blogs[2].likes)
@@ -101,12 +101,12 @@ describe("favorite blog", () => {
 })
 
 describe("most blogs", () => {
-	test("with empty list", () => {
+	test("of empty list returns error", () => {
 		const result = listHelper.mostBlogs([])
 		expect(result.error).toEqual("no blogs")
 	})
 	
-	test("of list of blogs", () => {
+	test("of list of blogs returns correctly object with author and total amount of their blogs", () => {
 		const result = listHelper.mostBlogs(blogs)
 		expect(result.author).toEqual(blogs[3].author)
 		expect(result.blogs).toBe(3)
@@ -114,12 +114,12 @@ describe("most blogs", () => {
 })
 
 describe("most likes", () => {
-	test("with empty list", () => {
+	test("of empty list returns error", () => {
 		const result = listHelper.mostLikes([])
 		expect(result.error).toEqual("no blogs")
 	})
 
-	test("of list of blogs", () => {
+	test("of list of blogs returns correctly object with author and total amount of their likes", () => {
 		const result = listHelper.mostLikes(blogs)
 		expect(result.author).toEqual(blogs[1].author)
 		expect(result.likes).toBe(17)
