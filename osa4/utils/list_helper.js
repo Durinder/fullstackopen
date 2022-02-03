@@ -38,16 +38,42 @@ const mostBlogs = (blogs) => {
 			maxValue = modeMap[cur]
 		}
 	}
-	
+
 	return {
 		author: ret,
 		blogs: maxValue
 	}
 }
 
+const mostLikes = (blogs) => {
+	if (blogs.length === 0)
+		return {error: "no blogs"}
+	
+	let ret = blogs[0].author
+	let maxValue = 0
+	let modeMap = {}
+	for (let i = 0; i < blogs.length; i++)
+	{
+		let cur = blogs[i].author
+		if (modeMap[cur] === undefined)
+			modeMap[cur] = blogs[i].likes
+		else
+			modeMap[cur] += blogs[i].likes
+		if (modeMap[cur] > maxValue) {
+			ret = cur
+			maxValue = modeMap[cur]
+		}
+	}
+
+	return {
+		author: ret,
+		likes: maxValue
+	}
+}
 module.exports = {
 	dummy,
 	totalLikes,
 	favoriteBlog,
-	mostBlogs
+	mostBlogs,
+	mostLikes
 }
