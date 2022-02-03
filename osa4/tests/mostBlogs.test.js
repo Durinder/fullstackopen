@@ -1,6 +1,6 @@
 const listHelper = require("../utils/list_helper")
 
-describe("favorite blog", () => {
+describe("most blogs", () => {
 	const blogs = [
 		{
 			_id: "5a422a851b54a676234d17f7",
@@ -52,15 +52,14 @@ describe("favorite blog", () => {
 		}  
 	]
 
-	test("with most likes", () => {
-		const result = listHelper.favoriteBlog(blogs)
-		expect(result.author).toEqual(blogs[2].author)
-		expect(result.likes).toEqual(blogs[2].likes)
-		expect(result.title).toEqual(blogs[2].title)
+	test("of list of blogs", () => {
+		const result = listHelper.mostBlogs(blogs)
+		expect(result.author).toEqual(blogs[3].author)
+		expect(result.blogs).toBe(3)
 	})
 
 	test("with empty list", () => {
-		const result = listHelper.favoriteBlog([])
+		const result = listHelper.mostBlogs([])
 		expect(result.error).toEqual("no blogs")
 	})
 })
