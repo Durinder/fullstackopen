@@ -118,6 +118,28 @@ describe("HTTP DELETE to /api/blogs/{id}", () => {
 	})
 })
 
+describe("HTTP PUT to /api/blogs/{id}", () => {
+	test("update amount of likes", async () => {
+		const response = await api
+			.put("/api/blogs/5a422a851b54a676234d17f7")
+			.send({
+				likes: 1337
+			})
+
+		expect(response.body.likes).toEqual(1337)
+	})
+
+	test("update title", async () => {
+		const response = await api
+			.put("/api/blogs/5a422a851b54a676234d17f7")
+			.send({
+				title: "The Testing"
+			})
+
+		expect(response.body.title).toEqual("The Testing")
+	})
+})
+
 afterAll(() => {
 	mongoose.connection.close()
 })
