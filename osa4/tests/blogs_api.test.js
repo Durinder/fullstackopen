@@ -49,27 +49,40 @@ test("returned blogs have a field named 'id'", async () => {
 	expect(response.body[0].id).toBeDefined()
 })
 
-test("HTTP POST to /api/blogs works", async () => {
-	await api
-		.post("/api/blogs")
-		.send({
-			_id: "5a422b3a1b54a676234d17f9",
-			title: "Canonical string reduction",
-			author: "Edsger W. Dijkstra",
-			url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
-			likes: 12,
-			__v: 0
-		})
-		.expect(200)
-		.expect("Content-Type", /application\/json/)
+describe("HTTP POST to /api/blogs", () => {
+	test("new blog is added", async () => {
+		await api
+			.post("/api/blogs")
+			.send({
+				_id: "5a422b3a1b54a676234d17f9",
+				title: "Canonical string reduction",
+				author: "Edsger W. Dijkstra",
+				url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+				likes: 12,
+				__v: 0
+			})
+			.expect(200)
+			.expect("Content-Type", /application\/json/)
 
-	const newList = await Blog.find({})
-	
-	expect(newList).toHaveLength(3)
-	expect(newList[2].id).toBe("5a422b3a1b54a676234d17f9")
+		const newList = await Blog.find({})
+		
+		expect(newList).toHaveLength(3)
+		expect(newList[2].id).toBe("5a422b3a1b54a676234d17f9")
+	})
+	test("400 Bad Request for no fields title and url", async () => {
+		await api
+			.post("/api/blogs")
+			.send({
+				_id: "5a422b3a1b54a676234d17f9",
+				author: "Edsger W. Dijkstra",
+				likes: 12,
+				__v: 0
+			})
+			.expect(400)
+	})
 })
 
-test("if field 'likes' is not given a value, it is given a value of 0", async () => {
+test("if no 'likes' field, it is given a value of 0", async () => {
 	const response = await api
 		.post("/api/blogs")
 		.send({
