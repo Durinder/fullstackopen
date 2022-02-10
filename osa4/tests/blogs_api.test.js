@@ -63,10 +63,24 @@ test("HTTP POST to /api/blogs works", async () => {
 		.expect(200)
 		.expect("Content-Type", /application\/json/)
 
-	const newList = await api.get("/api/blogs")
+	const newList = await Blog.find({})
 	
-	expect(newList.body).toHaveLength(3)
-	expect(newList.body[2].id).toBe("5a422b3a1b54a676234d17f9")
+	expect(newList).toHaveLength(3)
+	expect(newList[2].id).toBe("5a422b3a1b54a676234d17f9")
+})
+
+test("if field 'likes' is not given a value, it is given a value of 0", async () => {
+	const response = await api
+		.post("/api/blogs")
+		.send({
+			_id: "5a422b3a1b54a676234d17f9",
+			title: "Canonical string reduction",
+			author: "Edsger W. Dijkstra",
+			url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+			__v: 0
+		})
+
+	expect(response.body.likes).toBe(0)
 })
 
 afterAll(() => {
