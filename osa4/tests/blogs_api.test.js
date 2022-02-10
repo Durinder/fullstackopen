@@ -49,6 +49,26 @@ test("returned blogs have a field named 'id'", async () => {
 	expect(response.body[0].id).toBeDefined()
 })
 
+test("HTTP POST to /api/blogs works", async () => {
+	await api
+		.post("/api/blogs")
+		.send({
+			_id: "5a422b3a1b54a676234d17f9",
+			title: "Canonical string reduction",
+			author: "Edsger W. Dijkstra",
+			url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+			likes: 12,
+			__v: 0
+		})
+		.expect(200)
+		.expect("Content-Type", /application\/json/)
+
+	const newList = await api.get("/api/blogs")
+	
+	expect(newList.body).toHaveLength(3)
+	expect(newList.body[2].id).toBe("5a422b3a1b54a676234d17f9")
+})
+
 afterAll(() => {
 	mongoose.connection.close()
 })
