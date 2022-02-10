@@ -54,12 +54,10 @@ describe("HTTP POST to /api/blogs", () => {
 		await api
 			.post("/api/blogs")
 			.send({
-				_id: "5a422b3a1b54a676234d17f9",
 				title: "Canonical string reduction",
 				author: "Edsger W. Dijkstra",
 				url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
-				likes: 12,
-				__v: 0
+				likes: 12
 			})
 			.expect(200)
 			.expect("Content-Type", /application\/json/)
@@ -67,16 +65,27 @@ describe("HTTP POST to /api/blogs", () => {
 		const newList = await Blog.find({})
 		
 		expect(newList).toHaveLength(3)
-		expect(newList[2].id).toBe("5a422b3a1b54a676234d17f9")
+		expect(newList[2].title).toEqual("Canonical string reduction")
 	})
-	test("400 Bad Request for no fields title and url", async () => {
+
+	test("400 Bad Request for no title field", async () => {
 		await api
 			.post("/api/blogs")
 			.send({
-				_id: "5a422b3a1b54a676234d17f9",
 				author: "Edsger W. Dijkstra",
-				likes: 12,
-				__v: 0
+				url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+				likes: 12
+			})
+			.expect(400)
+	})
+
+	test("400 Bad Request for no url field", async () => {
+		await api
+			.post("/api/blogs")
+			.send({
+				title: "Canonical string reduction",
+				author: "Edsger W. Dijkstra",
+				likes: 12
 			})
 			.expect(400)
 	})
@@ -86,11 +95,9 @@ test("if no 'likes' field, it is given a value of 0", async () => {
 	const response = await api
 		.post("/api/blogs")
 		.send({
-			_id: "5a422b3a1b54a676234d17f9",
 			title: "Canonical string reduction",
 			author: "Edsger W. Dijkstra",
-			url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
-			__v: 0
+			url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html"
 		})
 
 	expect(response.body.likes).toBe(0)
