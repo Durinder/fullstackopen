@@ -29,26 +29,26 @@ beforeEach(async () => {
 	blogObject = new Blog(initialBlogs[1])
 	await blogObject.save()
 })
+describe("HTTP GET to /api/blogs", () => {
+	test("blogs are returned as json", async () => {
+		await api
+			.get("/api/blogs")
+			.expect(200)
+			.expect("Content-Type", /application\/json/)
+	})
 
-test("blogs are returned as json", async () => {
-	await api
-		.get("/api/blogs")
-		.expect(200)
-		.expect("Content-Type", /application\/json/)
+	test("right amount of blogs are returned", async () => {
+		const response = await api.get("/api/blogs")
+
+		expect(response.body).toHaveLength(initialBlogs.length)
+	})
+
+	test("returned blogs have a field named 'id'", async () => {
+		const response = await api.get("/api/blogs")
+
+		expect(response.body[0].id).toBeDefined()
+	})
 })
-
-test("right amount of blogs are returned", async () => {
-	const response = await api.get("/api/blogs")
-
-	expect(response.body).toHaveLength(initialBlogs.length)
-})
-
-test("returned blogs have a field named 'id'", async () => {
-	const response = await api.get("/api/blogs")
-
-	expect(response.body[0].id).toBeDefined()
-})
-
 describe("HTTP POST to /api/blogs", () => {
 	test("new blog is added", async () => {
 		await api
@@ -66,6 +66,18 @@ describe("HTTP POST to /api/blogs", () => {
 		
 		expect(newList).toHaveLength(3)
 		expect(newList[2].title).toEqual("Canonical string reduction")
+	})
+
+	test("if no 'likes' field, it is given a value of 0", async () => {
+		const response = await api
+			.post("/api/blogs")
+			.send({
+				title: "Canonical string reduction",
+				author: "Edsger W. Dijkstra",
+				url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html"
+			})
+	
+		expect(response.body.likes).toBe(0)
 	})
 
 	test("400 Bad Request for no title field", async () => {
@@ -91,16 +103,19 @@ describe("HTTP POST to /api/blogs", () => {
 	})
 })
 
-test("if no 'likes' field, it is given a value of 0", async () => {
-	const response = await api
-		.post("/api/blogs")
-		.send({
-			title: "Canonical string reduction",
-			author: "Edsger W. Dijkstra",
-			url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html"
-		})
 
-	expect(response.body.likes).toBe(0)
+describe("HTTP DELETE to /api/blogs/{id}", () => {
+	test("returns 204 and removes the blog", async () => {
+		await api
+			.delete("/api/blogs/5a422a851b54a676234d17f7")
+			.expect(204)
+		
+		const list = await Blog.find({})
+
+		console.log(list)
+		expect(list).toHaveLength(1)
+		expect(list[0].title).toEqual(initialBlogs[1].title)
+	})
 })
 
 afterAll(() => {
