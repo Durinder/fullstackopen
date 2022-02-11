@@ -58,6 +58,37 @@ describe("when there is initially one user at db", () => {
 		const usersAtEnd = await listHelper.usersInDb()
 		expect(usersAtEnd).toHaveLength(usersAtStart.length)
 	})
+
+	test("creation fails with proper statuscode and message if password is too short", async () => {
+		const newUser = {
+			username: "Peelo",
+			name: "Pekka Elo",
+			password: "12"
+		}
+
+		const result = await api
+			.post("/api/users")
+			.send(newUser)
+			.expect(400)
+			.expect("Content-Type", /application\/json/)
+
+		expect(result.body.error).toContain("password needs to be at least 3 characters")
+	})
+
+	test("creation fails with proper statuscode and message if password is missing", async () => {
+		const newUser = {
+			username: "Peelo",
+			name: "Pekka Elo",
+		}
+
+		const result = await api
+			.post("/api/users")
+			.send(newUser)
+			.expect(400)
+			.expect("Content-Type", /application\/json/)
+
+		expect(result.body.error).toContain("missing password")
+	})
 })
 
 afterAll(() => {
