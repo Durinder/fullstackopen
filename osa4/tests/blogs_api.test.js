@@ -112,7 +112,6 @@ describe("HTTP DELETE to /api/blogs/{id}", () => {
 		
 		const list = await Blog.find({})
 
-		console.log(list)
 		expect(list).toHaveLength(1)
 		expect(list[0].title).toEqual(initialBlogs[1].title)
 	})
