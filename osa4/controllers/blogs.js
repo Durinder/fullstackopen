@@ -1,5 +1,6 @@
 const blogsRouter = require("express").Router()
 const Blog = require("../models/blog")
+const User = require("../models/user")
 
 blogsRouter.get("/", async (request, response) => {
 	const blogs = await Blog.find({})
@@ -7,18 +8,28 @@ blogsRouter.get("/", async (request, response) => {
 })
 
 blogsRouter.post("/", async (request, response) => {
-	const blog = new Blog(request.body)
+	const body = request.body
 
-	if (blog.likes === undefined) {
-		blog.likes = 0
+	if (body.title === undefined || body.url === undefined ||
+		body.userId === undefined) {
+		return response.status(400).send({ error: "missing fields" })
 	}
 
-	if (blog.title === undefined || blog.url === undefined) {
-		response.status(400)
-	}
+	const user = await User.findById(request.body.userId)
+
+	const blog = new Blog({
+		title: body.title,
+		author: body.author,
+		url: body.url,
+		likes: body.likes || 0,
+		user: user._id
+	})
 
 	const savedBlog = await blog.save()
-	response.json(savedBlog.toJSON())
+	user.blogs = user.blogs.concat(savedBlog._id)
+	await user.save()
+	
+	response.status(201).json(savedBlog.toJSON())
 })
 
 blogsRouter.delete("/:id", async (request, response) => {

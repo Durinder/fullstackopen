@@ -3,6 +3,8 @@ const supertest = require("supertest")
 const app = require("../app")
 const api = supertest(app)
 const Blog = require("../models/blog")
+const User = require("../models/user")
+const bcrypt = require("bcrypt")
 const initialBlogs = [
 	{
 		_id: "5a422a851b54a676234d17f7",
@@ -29,6 +31,7 @@ beforeEach(async () => {
 	blogObject = new Blog(initialBlogs[1])
 	await blogObject.save()
 })
+
 describe("HTTP GET to /api/blogs", () => {
 	test("blogs are returned as json", async () => {
 		await api
@@ -49,17 +52,29 @@ describe("HTTP GET to /api/blogs", () => {
 		expect(response.body[0].id).toBeDefined()
 	})
 })
+
 describe("HTTP POST to /api/blogs", () => {
+	beforeEach(async () => {
+		await User.deleteMany({})
+
+		const passwordHash = await bcrypt.hash("sekret", 10)
+		const user = new User({ username: "root", passwordHash })
+
+		await user.save()
+	})
+
 	test("new blog is added", async () => {
+		const user = await User.findOne({})
 		await api
 			.post("/api/blogs")
 			.send({
 				title: "Canonical string reduction",
 				author: "Edsger W. Dijkstra",
 				url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
-				likes: 12
+				likes: 12,
+				userId: user._id
 			})
-			.expect(200)
+			.expect(201)
 			.expect("Content-Type", /application\/json/)
 
 		const newList = await Blog.find({})
@@ -69,12 +84,14 @@ describe("HTTP POST to /api/blogs", () => {
 	})
 
 	test("if no 'likes' field, it is given a value of 0", async () => {
+		const user = await User.findOne({})
 		const response = await api
 			.post("/api/blogs")
 			.send({
 				title: "Canonical string reduction",
 				author: "Edsger W. Dijkstra",
-				url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html"
+				url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+				userId: user._id
 			})
 	
 		expect(response.body.likes).toBe(0)
@@ -102,7 +119,6 @@ describe("HTTP POST to /api/blogs", () => {
 			.expect(400)
 	})
 })
-
 
 describe("HTTP DELETE to /api/blogs/{id}", () => {
 	test("returns 204 and removes the blog", async () => {
