@@ -28,7 +28,7 @@ describe("when there is initially one user at db", () => {
 		await api
 			.post("/api/users")
 			.send(newUser)
-			.expect(200)
+			.expect(201)
 			.expect("Content-Type", /application\/json/)
 
 		const usersAtEnd = await listHelper.usersInDb()
@@ -53,7 +53,7 @@ describe("when there is initially one user at db", () => {
 			.expect(400)
 			.expect("Content-Type", /application\/json/)
 	
-		expect(result.body.error).toContain("`username` to be unique")
+		expect(result.body.error).toContain("username must be unique")
 	
 		const usersAtEnd = await listHelper.usersInDb()
 		expect(usersAtEnd).toHaveLength(usersAtStart.length)
