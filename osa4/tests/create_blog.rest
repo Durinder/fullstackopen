@@ -1,10 +1,11 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlBlZWxvIiwiaWQiOiI2MjBhNTY4ZTM3YjgxZGVhMjY0YWFiM2QiLCJpYXQiOjE2NDQ4NTcyMjJ9.6QHhtRA7Yr4yK3x9fkci4PkXshsHo1m15kxxoZzLdGc
 
 {
 	"title": "Pelkoa ja inhoa",
 	"author": "S.J. Wee",
 	"url": "www.google.com",
 	"likes": 4,
-	"userId": "620a56b737b81dea264aab4c"
+	"userId": "620a6bd3535da9525b4ae6a3"
 }
