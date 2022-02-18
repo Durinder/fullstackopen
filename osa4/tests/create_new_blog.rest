@@ -2,7 +2,9 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
+	"title": "Canonical string reduction",
 	"author": "Edsger W. Dijkstra",
 	"url": "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
-	"likes": 12
+	"likes": 12,
+	"userId": "620a568e37b81dea264aab3d"
 }
