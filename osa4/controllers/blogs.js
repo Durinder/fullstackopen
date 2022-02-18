@@ -1,7 +1,5 @@
 const blogsRouter = require("express").Router()
 const Blog = require("../models/blog")
-const User = require("../models/user")
-const jwt = require("jsonwebtoken")
 
 blogsRouter.get("/", async (request, response) => {
 	const blogs = await Blog.find({}).populate("user", { username: 1, name: 1 })
@@ -15,8 +13,8 @@ blogsRouter.post("/", async (request, response) => {
 		return response.status(400).send({ error: "missing fields" })
 	}
 
-	const decodedToken = jwt.verify(request.token, process.env.SECRET)
-	const user = await User.findById(decodedToken.id)
+	const user = request.user
+	console.log(user)
 
 	const blog = new Blog({
 		title: body.title,
@@ -39,9 +37,10 @@ blogsRouter.delete("/:id", async (request, response) => {
 		return response.status(404).end()
 	}
 
-	const decodedToken = jwt.verify(request.token, process.env.SECRET)
-
-	if (blog.user.toString() !== decodedToken.id) {
+	if (!request.user) {
+		return response.status(401).send({ error: "no token" })
+	}
+	if (blog.user.toString() !== request.user._id.toString()) {
 		return response.status(403).send({ error: "blog deletion unauthorized by different user" })
 	}
 
