@@ -14,11 +14,8 @@ blogsRouter.post("/", async (request, response) => {
 		body.userId === undefined) {
 		return response.status(400).send({ error: "missing fields" })
 	}
-	console.log("hello")
+
 	const decodedToken = jwt.verify(request.token, process.env.SECRET)
-	if (!request.token || !decodedToken.id) {
-		return response.status(401).json({ error : "token missing or invalid" })
-	}
 	const user = await User.findById(decodedToken.id)
 
 	const blog = new Blog({
@@ -37,7 +34,18 @@ blogsRouter.post("/", async (request, response) => {
 })
 
 blogsRouter.delete("/:id", async (request, response) => {
-	await Blog.findByIdAndDelete(request.params.id)
+	const blog = await Blog.findById(request.params.id)
+	if (blog === null) {
+		return response.status(404).end()
+	}
+
+	const decodedToken = jwt.verify(request.token, process.env.SECRET)
+
+	if (blog.user.toString() !== decodedToken.id) {
+		return response.status(403).send({ error: "blog deletion unauthorized by different user" })
+	}
+
+	await blog.deleteOne()
 	response.status(204).end()
 })
 
