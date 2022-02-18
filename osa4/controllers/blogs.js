@@ -13,6 +13,9 @@ blogsRouter.post("/", async (request, response) => {
 		return response.status(400).send({ error: "missing fields" })
 	}
 
+	if (!request.user) {
+		return response.status(401).send({ error: "no token" })
+	}
 	const user = request.user
 
 	const blog = new Blog({
