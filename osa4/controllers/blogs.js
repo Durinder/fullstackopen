@@ -14,7 +14,6 @@ blogsRouter.post("/", async (request, response) => {
 	}
 
 	const user = request.user
-	console.log(user)
 
 	const blog = new Blog({
 		title: body.title,
