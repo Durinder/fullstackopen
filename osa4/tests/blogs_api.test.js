@@ -54,6 +54,8 @@ describe("HTTP GET to /api/blogs", () => {
 })
 
 describe("HTTP POST to /api/blogs", () => {
+	let token
+
 	beforeEach(async () => {
 		await User.deleteMany({})
 
@@ -61,12 +63,35 @@ describe("HTTP POST to /api/blogs", () => {
 		const user = new User({ username: "root", passwordHash })
 
 		await user.save()
+
+		const loginResponse = await api
+			.post("/api/login")
+			.send({
+				username: "root",
+				password: "sekret"
+			})
+		token = loginResponse.body.token
+	})
+
+	test("missing token returns 401", async () => {
+		const user = await User.findOne({})
+		await api
+			.post("/api/blogs")
+			.send({
+				title: "Canonical string reduction",
+				author: "Edsger W. Dijkstra",
+				url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+				likes: 12,
+				userId: user._id
+			})
+			.expect(401)
 	})
 
 	test("new blog is added", async () => {
 		const user = await User.findOne({})
 		await api
 			.post("/api/blogs")
+			.set("Authorization", `bearer ${token}`)
 			.send({
 				title: "Canonical string reduction",
 				author: "Edsger W. Dijkstra",
@@ -87,6 +112,7 @@ describe("HTTP POST to /api/blogs", () => {
 		const user = await User.findOne({})
 		const response = await api
 			.post("/api/blogs")
+			.set("Authorization", `bearer ${token}`)
 			.send({
 				title: "Canonical string reduction",
 				author: "Edsger W. Dijkstra",
@@ -121,15 +147,48 @@ describe("HTTP POST to /api/blogs", () => {
 })
 
 describe("HTTP DELETE to /api/blogs/{id}", () => {
+	let token
+	let target
+
+	beforeEach(async () => {
+		await User.deleteMany({})
+
+		const passwordHash = await bcrypt.hash("sekret", 10)
+		const user = new User({ username: "root", passwordHash })
+
+		await user.save()
+
+		const loginResponse = await api
+			.post("/api/login")
+			.send({
+				username: "root",
+				password: "sekret"
+			})
+		token = loginResponse.body.token
+
+		target = await api
+			.post("/api/blogs")
+			.set("Authorization", `bearer ${token}`)
+			.send({
+				title: "Canonical string reduction",
+				author: "Edsger W. Dijkstra",
+				url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+				likes: 12,
+				userId: user._id
+			})
+	})
+
 	test("returns 204 and removes the blog", async () => {
+		const initialList = await Blog.find({})
+
 		await api
-			.delete("/api/blogs/5a422a851b54a676234d17f7")
+			.delete(`/api/blogs/${target.body.id}`)
+			.set("Authorization", `bearer ${token}`)
 			.expect(204)
 		
 		const list = await Blog.find({})
 
-		expect(list).toHaveLength(1)
-		expect(list[0].title).toEqual(initialBlogs[1].title)
+		expect(list).toHaveLength(initialList.length - 1)
 	})
 })
 
