@@ -55,8 +55,7 @@ const App = () => {
 		}
 	}
 
-	const handleLogout = (event) => {
-		event.preventDefault()
+	const handleLogout = () => {
 		window.localStorage.removeItem('loggedBlogappUser')
 		setUser(null)
 		setNotification('Successfully logged out')
@@ -81,13 +80,15 @@ const App = () => {
 			<Notification message={notification} />
 			{user === null ?
 				<div>
-
 					{loginForm()}
 				</div> :
 				<div>
 					<h2>blogs</h2>
 					<p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
-					<CreateNewForm />
+					<CreateNewForm
+						setNotification={setNotification}
+						setErrorMessage={setErrorMessage}
+					/>
 					{blogs.map(blog =>
 						<Blog key={blog.id} blog={blog} />
 					)}

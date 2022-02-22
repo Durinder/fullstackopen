@@ -2,13 +2,13 @@ import React, { useState } from 'react'
 import blogService from '../services/blogs'
 import PropTypes from 'prop-types'
 
-const CreateNewForm = ({ user }) => {
+const CreateNewForm = ({ setNotification, setErrorMessage }) => {
 	const [title, setTitle] = useState('')
 	const [author, setAuthor] = useState('')
 	const [url, setUrl] = useState('')
 
-	const handleCreate = async () => {
-		console.log(user)
+	const handleCreate = async (event) => {
+		event.preventDefault()
 		const newBlog = {
 			title: title,
 			author: author,
@@ -17,9 +17,20 @@ const CreateNewForm = ({ user }) => {
 
 		try {
 			await blogService.create(newBlog)
+			setTitle('')
+			setAuthor('')
+			setUrl('')
+			setNotification(`added ${title} by ${author}`)
+			setTimeout(() => {
+				setNotification(null)
+			}, 5000)
+			this.forceUpdate()
 		}
 		catch (exception) {
-			console.log(exception)
+			setErrorMessage('missing title or author or url')
+			setTimeout(() => {
+				setNotification(null)
+			}, 5000)
 		}
 	}
 
@@ -60,7 +71,9 @@ const CreateNewForm = ({ user }) => {
 }
 
 CreateNewForm.propTypes = {
-	user: PropTypes.object
+	user: PropTypes.object,
+	setNotification: PropTypes.func,
+	setErrorMessage: PropTypes.func
 }
 
 export default CreateNewForm
