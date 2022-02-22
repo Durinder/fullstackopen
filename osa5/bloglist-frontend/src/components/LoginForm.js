@@ -15,7 +15,7 @@ const LoginForm = ({ handleLogin, username, setUsername, password, setPassword }
 				/>
 			</div>
 			<div>
-			password
+				password
 				<input
 					type="password"
 					value={password}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import CreateNewForm from './components/CreateNewForm'
 import LoginForm from './components/LoginForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -21,12 +22,12 @@ const App = () => {
 		if (loggedUserJSON) {
 			const user = JSON.parse(loggedUserJSON)
 			setUser(user)
+			blogService.setToken(user.token)
 		}
 	}, [])
 
 	const handleLogin = async (event) => {
 		event.preventDefault()
-		console.log('logging in with', username, password)
 
 		try {
 			const user = await loginService.login({
@@ -36,6 +37,7 @@ const App = () => {
 			window.localStorage.setItem(
 				'loggedBlogappUser', JSON.stringify(user)
 			)
+			blogService.setToken(user.token)
 			setUser(user)
 			setUsername('')
 			setPassword('')
@@ -47,25 +49,33 @@ const App = () => {
 		}
 	}
 
-	const handleLogout = () => {
+	const handleLogout = (event) => {
+		event.preventDefault()
 		window.localStorage.removeItem('loggedBlogappUser')
 		setUser(null)
 	}
+
+	const loginForm = () => (
+		<LoginForm
+			handleLogin={handleLogin}
+			username={username}
+			setUsername={setUsername}
+			password={password}
+			setPassword={setPassword}
+		/>
+	)
+
 	return (
 		<div>
 			{user === null ?
 				<div>
 					{errorMessage}
-					<LoginForm
-						handleLogin={handleLogin}
-						username={username}
-						setUsername={setUsername}
-						password={password}
-						setPassword={setPassword} />
+					{loginForm()}
 				</div> :
 				<div>
 					<h2>blogs</h2>
 					<p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
+					<CreateNewForm />
 					{blogs.map(blog =>
 						<Blog key={blog.id} blog={blog} />
 					)}
