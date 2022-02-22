@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import CreateNewForm from './components/CreateNewForm'
 import LoginForm from './components/LoginForm'
+import { Notification, Error } from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
 	const [blogs, setBlogs] = useState([])
 	const [errorMessage, setErrorMessage] = useState(null)
+	const [notification, setNotification] = useState(null)
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
 	const [user, setUser] = useState(null)
@@ -41,8 +43,12 @@ const App = () => {
 			setUser(user)
 			setUsername('')
 			setPassword('')
+			setNotification(`Welcome ${user.name}`)
+			setTimeout(() => {
+				setNotification(null)
+			}, 5000)
 		} catch (exception) {
-			setErrorMessage('wrong credentials')
+			setErrorMessage('wrong username or password')
 			setTimeout(() => {
 				setErrorMessage(null)
 			}, 5000)
@@ -53,6 +59,10 @@ const App = () => {
 		event.preventDefault()
 		window.localStorage.removeItem('loggedBlogappUser')
 		setUser(null)
+		setNotification('Successfully logged out')
+		setTimeout(() => {
+			setNotification(null)
+		}, 5000)
 	}
 
 	const loginForm = () => (
@@ -67,9 +77,11 @@ const App = () => {
 
 	return (
 		<div>
+			<Error message={errorMessage} />
+			<Notification message={notification} />
 			{user === null ?
 				<div>
-					{errorMessage}
+
 					{loginForm()}
 				</div> :
 				<div>
