@@ -67,7 +67,7 @@ const App = () => {
     }, 5000)
   }
 
-  const CreateBlog = async (newBlog) => {
+  const createBlog = async (newBlog) => {
     BlogFormRef.current.toggleVisibility()
 
     try {
@@ -76,7 +76,6 @@ const App = () => {
       setTimeout(() => {
         setNotification(null)
       }, 5000)
-      this.forceUpdate()
     }
     catch (exception) {
       setErrorMessage('missing title or author or url')
@@ -109,7 +108,7 @@ const App = () => {
           <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
           <Togglable buttonLabel='new blog' ref={BlogFormRef}>
             <BlogForm
-              CreateBlog={CreateBlog}
+              createBlog={createBlog}
             />
           </Togglable>
           {blogs.map(blog =>

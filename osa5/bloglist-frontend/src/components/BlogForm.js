@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 
-const BlogForm = ({ CreateBlog }) => {
+const BlogForm = ({ createBlog }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
   const handleSubmit = async (event) => {
     event.preventDefault()
-    CreateBlog({
+    createBlog({
       title: title,
       author: author,
       url: url
