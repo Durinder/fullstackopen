@@ -21,7 +21,6 @@ const Blog = ({ blog, setNotification, setErrorMessage }) => {
     const likes = {
       likes: blog.likes + 1
     }
-    console.log(likes)
     try {
       await blogService.update(blog.id, likes)
       setNotification(`liked ${blog.title}`)
@@ -30,7 +29,6 @@ const Blog = ({ blog, setNotification, setErrorMessage }) => {
       }, 5000)
     }
     catch (exception) {
-      console.log(exception)
       setErrorMessage(exception)
       setTimeout(() => {
         setNotification(null)
