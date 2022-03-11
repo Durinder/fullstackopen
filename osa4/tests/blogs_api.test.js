@@ -193,40 +193,9 @@ describe("HTTP DELETE to /api/blogs/{id}", () => {
 })
 
 describe("HTTP PUT to /api/blogs/{id}", () => {
-	let token
-	let target
-
-	beforeEach(async () => {
-		await User.deleteMany({})
-
-		const passwordHash = await bcrypt.hash("sekret", 10)
-		const user = new User({ username: "root", passwordHash })
-
-		await user.save()
-
-		const loginResponse = await api
-			.post("/api/login")
-			.send({
-				username: "root",
-				password: "sekret"
-			})
-		token = loginResponse.body.token
-
-		target = await api
-			.post("/api/blogs")
-			.set("Authorization", `bearer ${token}`)
-			.send({
-				title: "Canonical string reduction",
-				author: "Edsger W. Dijkstra",
-				url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
-				likes: 12,
-				userId: user._id
-			})
-	})	
 	test("update amount of likes", async () => {
 		const response = await api
-			.put(`/api/blogs/${target.body.id}`)
-			.set("Authorization", `bearer ${token}`)
+			.put(`/api/blogs/5a422a851b54a676234d17f7`)
 			.send({
 				likes: 1337
 			})
@@ -237,7 +206,6 @@ describe("HTTP PUT to /api/blogs/{id}", () => {
 	test("update title", async () => {
 		const response = await api
 			.put("/api/blogs/5a422a851b54a676234d17f7")
-			.set("Authorization", `bearer ${token}`)
 			.send({
 				title: "The Testing"
 			})
