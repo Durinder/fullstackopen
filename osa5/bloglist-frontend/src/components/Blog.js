@@ -1,39 +1,57 @@
 import React, { useState } from 'react'
-import PropTypes from 'prop-types'
+import blogService from '../services/blogs'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, setNotification, setErrorMessage }) => {
   const [allInfo, setAllInfo] = useState(false)
 
   const blogStyle = {
     paddingTop: 10,
+    paddingBottom: 10,
     paddingLeft: 2,
     border: 'solid',
     borderWidth: 1,
-    marginBottom: 5
+    marginTop: 2,
+    marginBottom: 2
   }
   const handleClick = (e) => {
     setAllInfo(!allInfo)
   }
 
+  const addLike = async (event) => {
+    const likes = {
+      likes: blog.likes + 1
+    }
+    console.log(likes)
+    try {
+      await blogService.update(blog.id, likes)
+      setNotification(`liked ${blog.title}`)
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
+    }
+    catch (exception) {
+      console.log(exception)
+      setErrorMessage(exception)
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
+    }
+  }
+
 return (
-  <div style ={blogStyle} onClick={handleClick}>
-    {allInfo === false ?
-      <div>{blog.title} {blog.author}
-      </div>
-      :
+  <div style ={blogStyle}>
       <div>
-        <div>{blog.title} {blog.author}</div>
+        {blog.title} {blog.author}
+        <button onClick={handleClick}>{allInfo ? 'hide' : 'view'}</button>
+      </div>
+      {allInfo === true &&
+      <div>
         <div>{blog.url}</div>
-        <div>likes {blog.likes}</div>
+        <div>likes {blog.likes}<button onClick={addLike} type="submit">like</button></div>
         <div>{blog.user.name}</div>
       </div>
     }
   </div>
 )}
-
-
-Blog.propTypes = {
-  blog: PropTypes.object
-}
 
 export default Blog
