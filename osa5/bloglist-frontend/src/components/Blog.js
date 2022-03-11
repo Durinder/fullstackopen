@@ -12,7 +12,6 @@ const Blog = ({ blog }) => {
     marginBottom: 5
   }
   const handleClick = (e) => {
-    // e.preventDefault()
     setAllInfo(!allInfo)
   }
 
