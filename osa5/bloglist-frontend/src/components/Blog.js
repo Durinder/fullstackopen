@@ -25,7 +25,7 @@ return (
       <div>
         <div>{blog.title} {blog.author}</div>
         <div>{blog.url}</div>
-        <div>{blog.likes}</div>
+        <div>likes {blog.likes}</div>
         <div>{blog.user.name}</div>
       </div>
     }
