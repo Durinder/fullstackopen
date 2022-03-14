@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import blogService from '../services/blogs'
 
-const Blog = ({ blog, setNotification, setErrorMessage }) => {
+const Blog = ({ blog, user, blogs, setBlogs, setNotification, setErrorMessage }) => {
   const [allInfo, setAllInfo] = useState(false)
 
   const blogStyle = {
@@ -22,7 +22,9 @@ const Blog = ({ blog, setNotification, setErrorMessage }) => {
       likes: blog.likes + 1
     }
     try {
-      await blogService.update(blog.id, likes)
+      const updatedBlog = await blogService.update(blog.id, likes)
+      const updatedBlogs = blogs.map((blog) => blog.id === updatedBlog.id ? updatedBlog : blog)
+      setBlogs(updatedBlogs.sort((a, b) => b.likes - a.likes))
       setNotification(`liked ${blog.title}`)
       setTimeout(() => {
         setNotification(null)
@@ -33,6 +35,29 @@ const Blog = ({ blog, setNotification, setErrorMessage }) => {
       setTimeout(() => {
         setNotification(null)
       }, 5000)
+    }
+  }
+
+  const remove = async (event) => {
+    const confirm = window.confirm(`Remove blog ${blog.title} by ${blog.author}`)
+    if (confirm) {
+      try {
+        const toBeRemoved = blog.id
+        const response = await blogService.remove(blog.id)
+        if (response.status === 204) {
+          setBlogs(blogs.filter((blog) => blog.id !== toBeRemoved))
+          setNotification(`removed ${blog.title} by ${blog.author}`)
+          setTimeout(() => {
+            setNotification(null)
+          }, 5000)
+        }
+      }
+      catch (exception) {
+        setErrorMessage(exception)
+        setTimeout(() => {
+          setNotification(null)
+        }, 5000)
+      }
     }
   }
 
@@ -47,6 +72,9 @@ return (
         <div>{blog.url}</div>
         <div>likes {blog.likes}<button onClick={addLike} type="submit">like</button></div>
         <div>{blog.user.name}</div>
+        {user.name === blog.user.name &&
+        <button onClick={remove}>remove</button>
+        }
       </div>
     }
   </div>

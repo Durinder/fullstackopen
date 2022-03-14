@@ -77,7 +77,9 @@ const App = () => {
     BlogFormRef.current.toggleVisibility()
 
     try {
-      await blogService.create(newBlog)
+      const addedBlog = await blogService.create(newBlog)
+      const newList = [...blogs, addedBlog]
+      setBlogs(newList.sort((a,b) => b.likes - a.likes))
       setNotification(`added ${newBlog.title} by ${newBlog.author}`)
       setTimeout(() => {
         setNotification(null)
@@ -118,7 +120,7 @@ const App = () => {
             />
           </Togglable>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} setNotification={setNotification} setErrorMessage={setErrorMessage}/>
+            <Blog key={blog.id} blog={blog} user={user} blogs={blogs} setBlogs={setBlogs} setNotification={setNotification} setErrorMessage={setErrorMessage}/>
           )}
         </div>
       }
