@@ -13,11 +13,11 @@ const Blog = ({ blog, user, blogs, setBlogs, setNotification, setErrorMessage })
     marginTop: 2,
     marginBottom: 2
   }
-  const handleClick = (e) => {
+  const handleClick = () => {
     setAllInfo(!allInfo)
   }
 
-  const addLike = async (event) => {
+  const addLike = async () => {
     const likes = {
       likes: blog.likes + 1
     }
@@ -38,7 +38,7 @@ const Blog = ({ blog, user, blogs, setBlogs, setNotification, setErrorMessage })
     }
   }
 
-  const remove = async (event) => {
+  const remove = async () => {
     const confirm = window.confirm(`Remove blog ${blog.title} by ${blog.author}`)
     if (confirm) {
       try {
@@ -61,8 +61,8 @@ const Blog = ({ blog, user, blogs, setBlogs, setNotification, setErrorMessage })
     }
   }
 
-return (
-  <div style ={blogStyle}>
+  return (
+    <div style ={blogStyle}>
       <div>
         {blog.title} {blog.author}
         <button onClick={handleClick}>{allInfo ? 'hide' : 'view'}</button>
@@ -76,8 +76,8 @@ return (
         <button onClick={remove}>remove</button>
         }
       </div>
-    }
-  </div>
-)}
+      }
+    </div>
+  )}
 
 export default Blog
