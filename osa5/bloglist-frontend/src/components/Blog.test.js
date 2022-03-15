@@ -19,7 +19,6 @@ test('renders title and author only', () => {
 
   render(<Blog blog={blog} />)
 
-
   const element = screen.getByText('Title Author')
   expect(element).toBeDefined()
 })

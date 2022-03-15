@@ -62,7 +62,7 @@ const Blog = ({ blog, user, blogs, setBlogs, setNotification, setErrorMessage })
   }
 
   return (
-    <div style ={blogStyle}>
+    <div style={blogStyle}>
       <div>
         {blog.title} {blog.author}
         <button onClick={handleClick}>{allInfo ? 'hide' : 'view'}</button>
