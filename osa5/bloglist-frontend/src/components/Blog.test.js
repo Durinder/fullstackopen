@@ -1,9 +1,10 @@
 import React from 'react'
 import '@testing-library/jest-dom/extend-expect'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
 
-test('renders title and author only', () => {
+describe('<Blog />', () => {
   const blog = {
     title: 'Title',
     author: 'Author',
@@ -16,9 +17,30 @@ test('renders title and author only', () => {
     },
     id: '622f6b1028902e0e26885bd9'
   }
+  const user = {
+    name: 'Pekka Elo'
+  }
 
-  render(<Blog blog={blog} />)
+  test('renders title and author', () => {
+    const component = render(
+      <Blog blog={blog} user={user} />
+    )
+    expect(component.container).toHaveTextContent(
+      'Title Author'
+    )
+    expect(component.container).not.toHaveTextContent(
+      'URL'
+    )
+  })
 
-  const element = screen.getByText('Title Author')
-  expect(element).toBeDefined()
+  test('clicking the view button shows also url and likes', () => {
+    const component = render(
+      <Blog blog={blog} user={user} />
+    )
+    const button = component.getByText('view')
+    userEvent.click(button)
+
+    expect(component.container).toHaveTextContent('URL')
+    expect(component.container).toHaveTextContent('likes 4')
+  })
 })

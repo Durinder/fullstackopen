@@ -62,13 +62,13 @@ const Blog = ({ blog, user, blogs, setBlogs, setNotification, setErrorMessage })
   }
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className="blog">
       <div>
         {blog.title} {blog.author}
         <button onClick={handleClick}>{allInfo ? 'hide' : 'view'}</button>
       </div>
       {allInfo === true &&
-      <div>
+      <div className="allInfo">
         <div>{blog.url}</div>
         <div>likes {blog.likes}<button onClick={addLike} type="submit">like</button></div>
         <div>{blog.user.name}</div>
