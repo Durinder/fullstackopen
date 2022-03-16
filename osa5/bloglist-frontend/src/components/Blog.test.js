@@ -23,24 +23,39 @@ describe('<Blog />', () => {
 
   test('renders title and author', () => {
     const component = render(
-      <Blog blog={blog} user={user} />
+      <Blog blog={blog}/>
     )
-    expect(component.container).toHaveTextContent(
-      'Title Author'
-    )
-    expect(component.container).not.toHaveTextContent(
-      'URL'
-    )
+
+    expect(component.container).toHaveTextContent('Title Author')
+    expect(component.container).not.toHaveTextContent('URL')
   })
 
   test('clicking the view button shows also url and likes', () => {
     const component = render(
       <Blog blog={blog} user={user} />
     )
+
     const button = component.getByText('view')
     userEvent.click(button)
 
     expect(component.container).toHaveTextContent('URL')
     expect(component.container).toHaveTextContent('likes 4')
+  })
+
+  test('clicking the like button twice calls event handler function two times', () => {
+    const mockHandler = jest.fn()
+
+    const component = render(
+      <Blog blog={blog} user={user} addLike={mockHandler} />
+    )
+
+    const viewButton = component.getByText('view')
+    userEvent.click(viewButton)
+
+    const likeButton = screen.getByText('like')
+    userEvent.click(likeButton)
+    userEvent.click(likeButton)
+
+    expect(mockHandler.mock.calls).toHaveLength(2)
   })
 })
