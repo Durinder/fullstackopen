@@ -9,16 +9,18 @@ test('<BlogForm /> form calls event handler with correct data', () => {
 
   render(<BlogForm createBlog={createBlog} />)
 
-  const input = screen.getAllByRole('textbox')
+  const inputTitle = screen.getByPlaceholderText('Title')
+  const inputAuthor = screen.getByPlaceholderText('Author')
+  const inputUrl = screen.getByPlaceholderText('Url')
   const submitButton = screen.getByText('create')
 
-  userEvent.type(input[0], 'Title')
-  userEvent.type(input[1], 'Author')
-  userEvent.type(input[2], 'URL')
+  userEvent.type(inputTitle, 'This is Title')
+  userEvent.type(inputAuthor, 'Written by Author')
+  userEvent.type(inputUrl, 'hosted at URL')
   userEvent.click(submitButton)
 
   expect(createBlog.mock.calls).toHaveLength(1)
-  expect(createBlog.mock.calls[0][0].title).toBe('Title')
-  expect(createBlog.mock.calls[0][0].author).toBe('Author')
-  expect(createBlog.mock.calls[0][0].url).toBe('URL')
+  expect(createBlog.mock.calls[0][0].title).toBe('This is Title')
+  expect(createBlog.mock.calls[0][0].author).toBe('Written by Author')
+  expect(createBlog.mock.calls[0][0].url).toBe('hosted at URL')
 })
