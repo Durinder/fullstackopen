@@ -29,7 +29,8 @@ describe('Blog app', function() {
       cy.get('#login-button').click()
 
       cy.get('.error').should('contain', 'wrong username or password')
-      cy.get('.error').should('have.css', 'color', 'rgb(255, 0, 0)')    })
+        .and('have.css', 'color', 'rgb(255, 0, 0)')
+    })
   })
 
   describe('When logged in', function() {
@@ -52,6 +53,58 @@ describe('Blog app', function() {
 
       cy.get('.notification').should('contain', 'added Blog by Writer')
       cy.contains('Blog Writer')
+    })
+
+    describe('When blog in database', function() {
+      beforeEach(function() {
+        cy.request({
+          url: 'http://localhost:3003/api/blogs',
+          method: 'POST',
+          body: {
+            title: 'Blog',
+            author: 'Writer',
+            url: 'www.google.com'
+          },
+          headers: {
+            'Authorization': `bearer ${JSON.parse(localStorage.getItem('loggedBlogappUser')).token}`
+          }
+        })
+        cy.visit('http://localhost:3000')
+      })
+
+      it('A blog can be liked', function() {
+        cy.get('#allInfo').click()
+
+        cy.get('#like-button').click()
+        cy.contains('likes 1')
+      })
+
+      it('Blog can be removed by user who added it', function() {
+        cy.get('#allInfo').click()
+
+        cy.get('#remove-button').click()
+        cy.get('html').should('not.contain', 'Blog Writer')
+        cy.get('.notification').should('contain', 'removed Blog by Writer')
+      })
+
+      it('Blog cannot be removed by other users', function() {
+        const user2 = {
+          name: 'Wrong User',
+          username: 'impostor',
+          password: 'salainen'
+        }
+        cy.request('POST', 'http://localhost:3003/api/users/', user2)
+
+        cy.request('POST', 'http://localhost:3003/api/login', {
+          username: 'impostor', password: 'salainen'
+        }).then(response => {
+          localStorage.setItem('loggedBlogappUser', JSON.stringify(response.body))
+          cy.visit('http://localhost:3000')
+        })
+
+        cy.get('#allInfo').click()
+        cy.get('html').should('not.contain', '#remove-button')
+      })
     })
   })
 })

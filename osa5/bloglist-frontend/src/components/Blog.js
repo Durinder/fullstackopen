@@ -44,15 +44,15 @@ const Blog = ({ blog, user, addLike, blogs, setBlogs, setNotification, setErrorM
     <div style={blogStyle} className="blog">
       <div>
         {blog.title} {blog.author}
-        <button onClick={handleClick}>{allInfo ? 'hide' : 'view'}</button>
+        <button id="allInfo" onClick={handleClick}>{allInfo ? 'hide' : 'view'}</button>
       </div>
       {allInfo === true &&
       <div className="allInfo">
         <div>{blog.url}</div>
-        <div>likes {blog.likes}<button onClick={() => addLike(blog)} type="submit">like</button></div>
+        <div>likes {blog.likes}<button id="like-button" onClick={() => addLike(blog)} type="submit">like</button></div>
         <div>{blog.user.name}</div>
         {user.name === blog.user.name &&
-        <button onClick={remove}>remove</button>
+        <button id="remove-button" onClick={remove}>remove</button>
         }
       </div>
       }

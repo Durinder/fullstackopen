@@ -78,8 +78,7 @@ const App = () => {
 
     try {
       const addedBlog = await blogService.create(newBlog)
-      const newList = [...blogs, addedBlog]
-      setBlogs(newList.sort((a,b) => b.likes - a.likes))
+      setBlogs(blogs.concat(addedBlog))
       setNotification(`added ${newBlog.title} by ${newBlog.author}`)
       setTimeout(() => {
         setNotification(null)
