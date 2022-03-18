@@ -1,12 +1,7 @@
 describe('Blog app', function() {
   beforeEach(function() {
     cy.request('POST', 'http://localhost:3003/api/testing/reset')
-    const user = {
-      name: 'Testi Testaaja',
-      username: 'tester',
-      password: 'salainen'
-    }
-    cy.request('POST', 'http://localhost:3003/api/users/', user)
+    cy.createUser({ name: 'Testi Testaaja', username: 'tester', password: 'salainen' })
     cy.visit('http://localhost:3000')
   })
 
@@ -35,12 +30,7 @@ describe('Blog app', function() {
 
   describe('When logged in', function() {
     beforeEach(function() {
-      cy.request('POST', 'http://localhost:3003/api/login', {
-        username: 'tester', password: 'salainen'
-      }).then(response => {
-        localStorage.setItem('loggedBlogappUser', JSON.stringify(response.body))
-        cy.visit('http://localhost:3000')
-      })
+      cy.login({ username: 'tester', password: 'salainen' })
     })
 
     it('A blog can be created', function() {
@@ -55,21 +45,13 @@ describe('Blog app', function() {
       cy.contains('Blog Writer')
     })
 
-    describe('When blog in database', function() {
+    describe('and a blog in database', function() {
       beforeEach(function() {
-        cy.request({
-          url: 'http://localhost:3003/api/blogs',
-          method: 'POST',
-          body: {
-            title: 'Blog',
-            author: 'Writer',
-            url: 'www.google.com'
-          },
-          headers: {
-            'Authorization': `bearer ${JSON.parse(localStorage.getItem('loggedBlogappUser')).token}`
-          }
+        cy.createBlog({
+          title: 'Blog',
+          author: 'Writer',
+          url: 'www.google.com',
         })
-        cy.visit('http://localhost:3000')
       })
 
       it('A blog can be liked', function() {
@@ -88,22 +70,26 @@ describe('Blog app', function() {
       })
 
       it('Blog cannot be removed by other users', function() {
-        const user2 = {
-          name: 'Wrong User',
-          username: 'impostor',
-          password: 'salainen'
-        }
-        cy.request('POST', 'http://localhost:3003/api/users/', user2)
-
-        cy.request('POST', 'http://localhost:3003/api/login', {
-          username: 'impostor', password: 'salainen'
-        }).then(response => {
-          localStorage.setItem('loggedBlogappUser', JSON.stringify(response.body))
-          cy.visit('http://localhost:3000')
-        })
+        cy.createUser({ name: 'Wrong User', username: 'impostor', password: 'salainen' })
+        cy.login({ username: 'impostor', password: 'salainen' })
 
         cy.get('#allInfo').click()
         cy.get('html').should('not.contain', '#remove-button')
+      })
+
+      it.only('Blogs are ordered by likes', function() {
+        cy.createBlog({ title: 'Another Blog', author: 'Writer', url: 'www.google.com', likes: 3 })
+        cy.createBlog({ title: 'And Another Blog', author: 'Writer', url: 'www.google.com', likes: 7 })
+
+        cy.get('button[id=allInfo]')
+          .each(($btn) => {
+            cy.wrap($btn).click()
+          })
+
+        const likes = [7,3,0]
+        cy.get('div[id=likes]').each(($likediv, index) => {
+          cy.wrap($likediv[0].innerText).should('contains', likes[index])
+        })
       })
     })
   })

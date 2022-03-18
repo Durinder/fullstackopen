@@ -49,7 +49,7 @@ const Blog = ({ blog, user, addLike, blogs, setBlogs, setNotification, setErrorM
       {allInfo === true &&
       <div className="allInfo">
         <div>{blog.url}</div>
-        <div>likes {blog.likes}<button id="like-button" onClick={() => addLike(blog)} type="submit">like</button></div>
+        <div id="likes">likes {blog.likes}<button id="like-button" onClick={() => addLike(blog)} type="submit">like</button></div>
         <div>{blog.user.name}</div>
         {user.name === blog.user.name &&
         <button id="remove-button" onClick={remove}>remove</button>
