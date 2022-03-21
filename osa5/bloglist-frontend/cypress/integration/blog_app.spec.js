@@ -78,18 +78,26 @@ describe('Blog app', function() {
       })
 
       it.only('Blogs are ordered by likes', function() {
-        cy.createBlog({ title: 'Another Blog', author: 'Writer', url: 'www.google.com', likes: 3 })
-        cy.createBlog({ title: 'And Another Blog', author: 'Writer', url: 'www.google.com', likes: 7 })
+        cy.createBlog({ title: 'Another Blog', author: 'Writer', url: 'www.google.com', likes: 1 })
+        cy.createBlog({ title: 'And Another Blog', author: 'Writer', url: 'www.google.com', likes: 3 })
 
         cy.get('button[id=allInfo]')
           .each(($btn) => {
             cy.wrap($btn).click()
           })
 
-        const likes = [7,3,0]
+        const likes = [3,1,0]
         cy.get('div[id=likes]').each(($likediv, index) => {
-          cy.wrap($likediv[0].innerText).should('contains', likes[index])
+          cy.wrap($likediv[0].innerText).should('contain', likes[index])
         })
+
+        cy.intercept('PUT', '/api/blogs/*').as('updateLike')
+        cy.get('button[id=like-button]').eq(2).as('theButton')
+        for (let i = 0; i < 4; i++) {
+          cy.get('@theButton').click()
+          cy.wait('@updateLike')
+        }
+        cy.get('.blog').eq(0).should('not.contain', 'Another')
       })
     })
   })
