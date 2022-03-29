@@ -13,20 +13,11 @@ const Menu = ({ anecdotes, addNew }) => {
   }
 
   return (
-    <Router>
-      <div>
-        <Link style={padding} to="/">anecdotes</Link>
-        <Link style={padding} to="/create">create new</Link>
-        <Link style={padding} to="/about">about</Link>
-      </div>
-    
-      <Routes>
-        <Route path="/" element={<AnecdoteList anecdotes={anecdotes}/>} />
-        <Route path="/anecdotes/:id" element={<Anecdote anecdotes={anecdotes}/>} />
-        <Route path="/create" element={<CreateNew addNew={addNew} />} />
-        <Route path="/about" element={<About />} />
-      </Routes>
-    </Router>
+    <div>
+      <Link style={padding} to="/">anecdotes</Link>
+      <Link style={padding} to="/create">create new</Link>
+      <Link style={padding} to="/about">about</Link>
+    </div>
   )
 }
 
@@ -160,8 +151,16 @@ const App = () => {
   return (
     <div>
       <h1>Software anecdotes</h1>
-      <Menu anecdotes={anecdotes} addNew={addNew} />
-      <Footer />
+      <Router>
+        <Menu />
+        <Routes>
+          <Route path="/" element={<AnecdoteList anecdotes={anecdotes}/>} />
+          <Route path="/anecdotes/:id" element={<Anecdote anecdotes={anecdotes}/>} />
+          <Route path="/create" element={<CreateNew addNew={addNew} />} />
+          <Route path="/about" element={<About />} />
+      </Routes>
+    </Router>
+    <Footer />
     </div>
   )
 }
