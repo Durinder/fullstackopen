@@ -158,9 +158,9 @@ const App = () => {
           <Route path="/anecdotes/:id" element={<Anecdote anecdotes={anecdotes}/>} />
           <Route path="/create" element={<CreateNew addNew={addNew} />} />
           <Route path="/about" element={<About />} />
-      </Routes>
-    </Router>
-    <Footer />
+        </Routes>
+      </Router>
+      <Footer />
     </div>
   )
 }
